@@ -14,10 +14,8 @@ export default function App() {
   const RenderPosts = () => {
     return Posts.map((post, i) => {
 
-      const validKeys = ['id', 'title', 'body', 'public'];
+      const validKeys = ['id', 'title', 'body', 'author', 'public'];
       if (!isObjValid(post, validKeys)) return;
-
-      console.log(post);
 
       const { author, title, body, public: isPublic } = post;
 
