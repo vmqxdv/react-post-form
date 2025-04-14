@@ -12,11 +12,17 @@ export default function App() {
   useEffect(FetchPosts, []);
 
   const RenderPosts = () => {
-    return Posts.map(post => {
-      const { id, author, title, body, public: isPublic } = post;
+    return Posts.map((post, i) => {
+
+      const validKeys = ['id', 'title', 'body', 'public'];
+      if (!isObjValid(post, validKeys)) return;
+
+      console.log(post);
+
+      const { author, title, body, public: isPublic } = post;
 
       return (
-        <li key={formatKey(title, id)}>
+        <li key={formatKey(title, i)}>
           <h2>{title}</h2>
           <p>{body}</p>
           <div>{author}</div>
@@ -61,7 +67,11 @@ export default function App() {
 
 
 
-const formatKey = (title, id) => {
+function formatKey(title, id) {
   if (typeof title !== 'string') return;
   return `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${id}`;
+};
+
+function isObjValid(obj, validKeys) {
+  return validKeys.every(key => obj[key]);
 };
