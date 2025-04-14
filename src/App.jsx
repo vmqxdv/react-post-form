@@ -3,6 +3,12 @@ import Axios from 'axios';
 
 export default function App() {
   const [Posts, SetPosts] = useState([]);
+  const [formData, setFormData] = useState({
+    author: '',
+    title: '',
+    body: '',
+    public: true,
+  });
 
   const FetchPosts = () => {
     Axios.get('https://67c5b4f3351c081993fb1ab6.mockapi.io/api/posts')
@@ -10,6 +16,16 @@ export default function App() {
   };
 
   useEffect(FetchPosts, []);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    Axios.post('https://67c5b4f3351c081993fb1ab6.mockapi.io/api/posts', formData)
+      .then((Res) => {
+        console.log('Dati inviati con successo:', Res.data);
+        SetPosts((prevPosts) => [...prevPosts, Res.data]);
+        setFormData({ author: '', title: '', body: '', public: true });
+      });
+  };
 
   const RenderPosts = () => {
     return Posts.map((post, i) => {
@@ -27,24 +43,24 @@ export default function App() {
           <div>{isPublic ? 'Pubblico' : 'Privato'}</div>
         </li>
       );
-    });
+    }).reverse();
   };
 
   return (
     <>
       <header>
-        <form>
+        <form onSubmit={handleSubmit}>
           <label htmlFor="author">Autore</label>
-          <input id="author" type="text" />
+          <input id="author" name="author" type="text" value={formData.author} onChange={(event) => setFormData({ ...formData, author: event.target.value })} />
 
           <label htmlFor="title">Titolo</label>
-          <input id="title" type="text" />
+          <input id="title" name="title" type="text" value={formData.title} onChange={(event) => setFormData({ ...formData, title: event.target.value })} />
 
           <label htmlFor="body">Testo del messaggio</label>
-          <input id="body" type="text" />
+          <input id="body" name="body" type="text" value={formData.body} onChange={(event) => setFormData({ ...formData, body: event.target.value })} />
 
           <label htmlFor="public">Pubblico</label>
-          <select id="public" name="public">
+          <select id="public" name="public" value={formData.public} onChange={(event) => setFormData({ ...formData, public: event.target.value === 'true' })}>
             <option value={true}>Si</option>
             <option value={false}>No</option>
           </select>
@@ -74,6 +90,9 @@ function isObjValid(obj, validKeys) {
   return validKeys.every(key => {
     if (key === 'id')
       return obj[key] && !isNaN(Number(obj[key]));
+
+    if (typeof obj[key] === 'string')
+      return obj[key].trim() !== '';
 
     return obj[key] !== undefined && obj[key] !== null;
   });
