@@ -71,5 +71,10 @@ function formatKey(title, id) {
 };
 
 function isObjValid(obj, validKeys) {
-  return validKeys.every(key => obj[key]);
+  return validKeys.every(key => {
+    if (key === 'id')
+      return obj[key] && !isNaN(Number(obj[key]));
+
+    return obj[key] !== undefined && obj[key] !== null;
+  });
 };
